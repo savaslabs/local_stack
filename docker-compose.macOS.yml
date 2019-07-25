@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  php:
+    image: wodby/drupal-php:$MACOS_PHP_TAG
+    environment:
+      PHP_XDEBUG_REMOTE_HOST: host.docker.internal # Docker 18.03+ Mac/Win
+    volumes:
+#      - ./:/var/www/html
+## For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
+      - ./:/var/www/html:cached # User-guided caching
+#      - docker-sync:/var/www/html # Docker-sync
+## For XHProf and Xdebug profiler traces
+#      - files:/mnt/files
+
+  nginx:
+    volumes:
+#      - ./:/var/www/html
+# For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
+      - ./:/var/www/html:cached # User-guided caching
+#      - docker-sync:/var/www/html # Docker-sync
