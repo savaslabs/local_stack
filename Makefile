@@ -47,7 +47,7 @@ include .env
 default: up
 
 PROJECT_ROOT ?= /var/www/html
-DRUPAL_ROOT ?= /var/www/html/docroot
+DRUPAL_ROOT ?= /var/www/html/www/web
 
 #
 # Dev Operations
@@ -104,13 +104,13 @@ install: ##@dev-environment Configure development environment.
 	if [ ! -f .env ]; then cp .env.dist .env; fi
 	make down
 	make up
-	echo "Giving Docker a few seconds..."; sleep 10
 	make composer-install
-	chmod 777 docroot/sites/default
-	if [ ! -f docroot/sites/default/settings.local.php ]; then cp .docker/drupal/settings.local.php docroot/sites/default/settings.local.php; fi
-	git config core.hooksPath .git/hooks
+	chmod 777 web/sites/default
+	cp web/sites/default/default.settings.local.php web/sites/default/settings.local.php
 	@echo "Pulling database for $(PROJECT_NAME)..."
-	make pull-db
+	sleep 5
+	make import-db
+	# @todo: uncomment when legacy files need to be pulled during the migration.
 	make pull-files
 	make prep-site
 
@@ -130,21 +130,18 @@ composer-install: ##@dev-environment Run composer install
 
 import-db: ##@dev-environment Import locally cached copy of `database.sql` to project dir.
 	@echo "Dropping old database for $(PROJECT_NAME)..."
-	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql-drop -v
+	-docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql-drop -v
+	if [ -f .docker/db/database.sql.gz ]; then rm .docker/db/database.sql.gz; fi
+	if [ -f .docker/db/database.sql ]; then rm .docker/db/database.sql; fi
+	terminus backup:get $(PANTHEON_DEV) --element=database --to=.docker/db/database.sql.gz
+	gunzip .docker/db/database.sql.gz -f
 	@echo "Importing database for $(PROJECT_NAME)..."
-	pv .docker/db/import/database.sql | docker exec -i dardenmain_mariadb mysql -udrupal -pdrupal drupal
+	pv .docker/db/database.sql | docker exec -i $(PROJECT_NAME)_mariasb mysql -ugu -pgu gu
 	make drush cr
 	make sanitize-db
 
 export-db:
 	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql:dump --result-file=$(PROJECT_ROOT)/.docker/db/export/database.sql --gzip --structure-tables-key=common
-
-pull-db: ##@dev-environment Download AND import `database.sql`.
-	if [ -f .docker/db/import/database.sql.gz ]; then rm .docker/db/import/database.sql.gz; fi
-	if [ -f .docker/db/import/database.sql ]; then rm .docker/db/import/database.sql; fi
-	@echo "Pulling DB from Acquia"
-	drush @self.prod sql-dump > .docker/db/import/database.sql -q
-	make import-db
 
 pull-files: ##@dev-environment Pull files from production site.
 	drush rsync @self.prod:/var/www/html/dardenexternal.prod/docroot/sites/default/files @self.local:./sites/default -y
