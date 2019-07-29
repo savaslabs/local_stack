@@ -47,7 +47,7 @@ include .env
 default: up
 
 PROJECT_ROOT ?= /var/www/html
-DRUPAL_ROOT ?= /var/www/html/web
+DRUPAL_ROOT ?= /var/www/html/www/web
 
 #
 # Dev Operations
