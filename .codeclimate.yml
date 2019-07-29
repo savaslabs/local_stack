@@ -1,0 +1,54 @@
+---
+engines:
+  eslint:
+    enabled: true
+    config:
+      config: .eslintrc
+  sonar-php:
+    enabled: true
+    minimum_severity: blocker
+    config:
+      tests_patterns:
+        - "**/src/test/**"
+        - "**/tests/src/**"
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - php:
+  phpmd:
+    enabled: true
+    config:
+      file_extensions: "php,inc,module,install,theme"
+      rulesets: ".phpmd.xml"
+  phpcodesniffer:
+    enabled: true
+    config:
+      file_extensions: "php,inc,module,install,theme"
+      encoding: utf-8
+      standard: "Drupal"
+      ignore_warnings: true
+ratings:
+  paths:
+  - "**.scss"
+  - "**.css"
+  - "**.inc"
+  - "**.js"
+  - "**.module"
+  - "**.install"
+  - "**.php"
+exclude_patterns:
+- "docroot/"
+- "!docroot/modules/custom/"
+- "!docroot/themes/custom/"
+- "**/vendor/**"
+- "**/node_modules/**"
+# - "docroot/themes/custom/<themename>/build/"
+- "vendor/"
+- "**/tests/**"
+- "**/spec/**"
+- "config/"
+- "console/"
+- "drush/"
+- "scripts/"
+- ".docker/"

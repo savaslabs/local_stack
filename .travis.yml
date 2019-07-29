@@ -1,0 +1,38 @@
+language: python
+python:
+- "3.6"
+sudo: required
+dist: trusty
+
+addons:
+  hosts:
+  - local.darden.virginia.edu
+
+services:
+- docker
+
+git:
+  depth: 5
+
+cache:
+  directories:
+  - $TRAVIS_BUILD_DIR/.docker/db/import
+  - $TRAVIS_BUILD_DIR/.composer/cache
+
+before_install:
+  - export PATH=$PATH:$HOME/.local/bin
+  - sudo chmod 777 -R docroot/
+  - sudo chown -R $USER *
+  - sudo apt-get install pv
+  - pip install awscli
+
+install:
+  - make travis-install
+  - docker-compose ps
+
+script:
+  - make phpcs
+
+after_failure:
+  - docker-compose logs
+  - docker exec dardenmain_php drush ws --count=100 --format=yaml
