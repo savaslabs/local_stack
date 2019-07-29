@@ -144,7 +144,7 @@ export-db:
 	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql:dump --result-file=$(PROJECT_ROOT)/.docker/db/export/database.sql --gzip --structure-tables-key=common
 
 pull-files: ##@dev-environment Pull files from production site.
-	terminus rsync $(PANTHEON_DEV):files www/web/sites/default/files
+	terminus rsync $(PANTHEON).dev:files www/web/sites/default/files
 
 sanitize-db: ##@dev-environment Sanitize the database.
 	# Sanitize database.
@@ -187,10 +187,10 @@ enable-dev-modules: ##drush Enable modules for local development.
 # Theme commands
 #
 install-theme-dependencies: ##theme Installs npm dependencies for custom theme.
-	cd docroot/themes/custom/darden_main && npm install
+	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm install; fi
 
 build-theme-files: ##theme Builds CSS and JS bundle files for production.
-	cd docroot/themes/custom/darden_main && npm run build
+	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm run build; fi
 
 #
 # Tests
