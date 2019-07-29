@@ -21,10 +21,8 @@ cache:
 
 before_install:
   - export PATH=$PATH:$HOME/.local/bin
-  - sudo chmod 777 -R docroot/
   - sudo chown -R $USER *
   - sudo apt-get install pv
-  - pip install awscli
 
 install:
   - make travis-install

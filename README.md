@@ -6,7 +6,7 @@
 
 1. Docker
     * v18.06 and above
-2. Pantheon
+1. Pantheon
     * Create a Pantheon
     * Install terminus on your local machine:  https://github.com/pantheon-systems/terminus#installation
     * Create a machine token on Pantheon, and copy the token:  https://pantheon.io/docs/machine-tokens/
@@ -15,13 +15,17 @@
       This will save your authentication credentials associated with your email address.
     
       NOTE: If you encounter a PHP Console Hightlighter conflict, revert to version 0.3 following the [readme](https://github.com/JakubOnderka/PHP-Console-Highlighter)
-3. [Drush Launcher](https://github.com/drush-ops/drush-launcher). Follow the instructions there or try:
+1. [Terminus Rsync Plugin](https://github.com/pantheon-systems/terminus-rsync-plugin). Allows you to rsync
+site files from Pantheon instead of fetching from a specific backup.
+    * `mkdir -p ~/.terminus/plugins` (if the directory does not yet exist)
+    * `composer create-project --no-dev -d ~/.terminus/plugins pantheon-systems/terminus-rsync-plugin:~1`
+1. [Drush Launcher](https://github.com/drush-ops/drush-launcher). Follow the instructions there or try:
     * Run `which drush` to find the path of your drush installation
     * `curl -OL https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar`
     * `chmod +x drush.phar`
     * Move drush.phar to the location of your old drush executable and rename to drush with `mv drush.phar /path/to/executable/drush`
-4. `pv` ([Pipe Viewer](http://www.ivarch.com/programs/pv.shtml))
-5. Review this README and follow instructions for local development setup
+1. `pv` ([Pipe Viewer](http://www.ivarch.com/programs/pv.shtml))
+1. Review this README and follow instructions for local development setup
 
 ### Site installation
 

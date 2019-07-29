@@ -47,7 +47,7 @@ include .env
 default: up
 
 PROJECT_ROOT ?= /var/www/html
-DRUPAL_ROOT ?= /var/www/html/www/web
+DRUPAL_ROOT ?= /var/www/html/web
 
 #
 # Dev Operations
@@ -105,13 +105,13 @@ install: ##@dev-environment Configure development environment.
 	make down
 	make up
 	make composer-install
-	chmod 777 web/sites/default
-	cp web/sites/default/default.settings.local.php web/sites/default/settings.local.php
+	chmod 777 www/web/sites/default
+	if [ ! -f www/web/sites/default/settings.local.php ]; then cp .docker/drupal/settings.local.php www/web/sites/default/settings.local.php; fi
 	@echo "Pulling database for $(PROJECT_NAME)..."
 	sleep 5
 	make import-db
 	# @todo: uncomment when legacy files need to be pulled during the migration.
-	make pull-files
+	# make pull-files
 	make prep-site
 
 travis-install: ##@dev-environment Configure development environment - Travis build.
@@ -129,8 +129,6 @@ composer-install: ##@dev-environment Run composer install
 	docker-compose exec -T php composer install -n --prefer-dist -v
 
 import-db: ##@dev-environment Import locally cached copy of `database.sql` to project dir.
-	@echo "Dropping old database for $(PROJECT_NAME)..."
-	-docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql-drop -v
 	if [ -f .docker/db/database.sql.gz ]; then rm .docker/db/database.sql.gz; fi
 	if [ -f .docker/db/database.sql ]; then rm .docker/db/database.sql; fi
 	terminus backup:get $(PANTHEON_DEV) --element=database --to=.docker/db/database.sql.gz
@@ -144,7 +142,7 @@ export-db:
 	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql:dump --result-file=$(PROJECT_ROOT)/.docker/db/export/database.sql --gzip --structure-tables-key=common
 
 pull-files: ##@dev-environment Pull files from production site.
-	drush rsync @self.prod:/var/www/html/dardenexternal.prod/docroot/sites/default/files @self.local:./sites/default -y
+	terminus rsync $(PANTHEON_DEV):files www/web/sites/default/files
 
 sanitize-db: ##@dev-environment Sanitize the database.
 	# Sanitize database.
