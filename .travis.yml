@@ -23,8 +23,7 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin
   - sudo chown -R $USER *
   - sudo apt-get install pv
-  - composer global require drupal/coder:^8.3.1
-  - composer global require dealerdirect/phpcodesniffer-composer-installer
+  -
 
 install:
   - make travis-install

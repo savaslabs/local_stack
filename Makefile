@@ -111,7 +111,7 @@ install: ##@dev-environment Configure development environment.
 	sleep 5
 	make import-db
 	# @todo: uncomment when legacy files need to be pulled during the migration.
-	# make pull-files
+	make pull-files
 	make prep-site
 
 travis-install: ##@dev-environment Configure development environment - Travis build.
@@ -194,7 +194,7 @@ build-theme-files: ##theme Builds CSS and JS bundle files for production.
 # Tests
 #
 phpcs:
-	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") vendor/bin/phpcs --standard=Drupal docroot/modules/custom docroot/themes/custom/darden_main --ignore=*.css,*scss,*.js,*.min.js,*.md,*.txt,node_modules/* --exclude=Drupal.InfoFiles.AutoAddedKeys
+	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") www/vendor/bin/phpcs --standard=Drupal docroot/modules/custom docroot/themes/custom/darden_main --ignore=*.css,*scss,*.js,*.min.js,*.md,*.txt,node_modules/* --exclude=Drupal.InfoFiles.AutoAddedKeys
 
 
 # https://stackoverflow.com/a/6273809/1826109
