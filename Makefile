@@ -118,6 +118,7 @@ travis-install: ##@dev-environment Configure development environment - Travis bu
 	if [ ! -f .env ]; then cp .env.dist .env; fi
 	make down
 	make up
+	make composer-install
 	echo "Giving Docker a few seconds..."; sleep 10
 	# Configure phpcs to use Drupal coding standards (this typically runs as a post `composer install` script).
 	vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
@@ -194,7 +195,7 @@ build-theme-files: ##theme Builds CSS and JS bundle files for production.
 # Tests
 #
 phpcs:
-	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") www/vendor/bin/phpcs --standard=Drupal docroot/modules/custom docroot/themes/custom/darden_main --ignore=*.css,*scss,*.js,*.min.js,*.md,*.txt,node_modules/* --exclude=Drupal.InfoFiles.AutoAddedKeys
+	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") vendor/bin/phpcs --standard=Drupal web/modules/custom web/themes/custom --ignore=*.css,*scss,*.js,*.min.js,*.md,*.txt,node_modules/* --exclude=Drupal.InfoFiles.AutoAddedKeys
 
 
 # https://stackoverflow.com/a/6273809/1826109
