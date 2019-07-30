@@ -25,21 +25,26 @@ env:
 
 cache:
   directories:
-  - $TRAVIS_BUILD_DIR/.docker/db/import
-  - $TRAVIS_BUILD_DIR/.composer/cache
+    - $TRAVIS_BUILD_DIR/.docker/db/import
+    - $HOME/.composer/cache/files
 
 before_install:
   - export PATH=$PATH:$HOME/.local/bin
-  - sudo chown -R $USER *
+  - sudo chown -R 1000:1000 $TRAVIS_BUILD_DIR/www
   - sudo apt-get install pv
 
   # Install Terminus
+  - cd $HOME
   - curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
+  - if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
+  - ln -s ~/vendor/bin/terminus $HOME/.local/bin/terminus
+  - if [ ! -d ~/.terminus/plugins ]; then mkdir -p ~/.terminus/plugins; fi
 
   # Install Terminus Composer Plugin
   - composer create-project --no-dev -d ~/.terminus/plugins pantheon-systems/terminus-composer-plugin:~1
 
 install:
+  - cd $TRAVIS_BUILD_DIR
   - make travis-install
   - docker-compose ps
 
@@ -56,7 +61,7 @@ script:
 
 after_failure:
   - docker-compose logs
-  - docker exec dardenmain_php drush ws --count=100 --format=yaml
+  - docker exec duke_margolis_php drush ws --count=100 --format=yaml
 
 after_success:
   # If this was a master branch build (as opposed to PR), and the build passed:

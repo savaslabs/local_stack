@@ -76,7 +76,7 @@ stop: ##@docker Stop and remove containers.
 clean: ##@docker Remove containers and other files created during install.
 	make prune
 	rm .env
-	rm docroot/sites/default/settings.local.php
+	rm www/web/sites/default/settings.local.php
 
 prune: ##@docker Remove containers for project.
 	@echo "Removing containers for $(PROJECT_NAME)..."
@@ -122,7 +122,7 @@ travis-install: ##@dev-environment Configure development environment - Travis bu
 	make composer-install
 	echo "Giving Docker a few seconds..."; sleep 10
 	# Configure phpcs to use Drupal coding standards (this typically runs as a post `composer install` script).
-	vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+	docker-compose exec -T php vendor/bin/phpcs --config-set installed_paths /var/www/html/vendor/drupal/coder/coder_sniffer
 
 composer-update: ##@dev-environment Run composer update.
 	docker-compose exec -T php composer update -n --prefer-dist -v
