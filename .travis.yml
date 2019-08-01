@@ -6,8 +6,7 @@ dist: trusty
 
 addons:
   hosts:
-  # UPDATE: docker hostname from .env.
-  - local.hostname
+  - local.healthpolicy.duke.edu
 
 services:
 - docker
@@ -15,46 +14,20 @@ services:
 git:
   depth: 5
 
-env:
-  global:
-    # UPDATE: Your Pantheon site's UUID (e.g. from your dashboard URL)
-    - PUUID='aaaaaaaa-0000-bbbb-1111-cccccccccccc'
-
-    # UPDATE: Your Pantheon site's name.
-    - PNAME='site-name'
-
 cache:
   directories:
-    - $TRAVIS_BUILD_DIR/.docker/db/import
-    - $HOME/.composer/cache/files
+  - $TRAVIS_BUILD_DIR/.docker/db/import
+  - $HOME/.composer/cache/files
 
 before_install:
   - export PATH=$PATH:$HOME/.local/bin
-  - sudo chown -R 1000:1000 $TRAVIS_BUILD_DIR/www
+  - sudo chown -R 1000:1000 $TRAVIS_BUILD_DIR/web
   - sudo apt-get install pv
-
-  # Install Terminus
-  - cd $HOME
-  - curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
-  - if [ ! -d ~/.local/bin ]; then mkdir -p ~/.local/bin; fi
-  - ln -s ~/vendor/bin/terminus $HOME/.local/bin/terminus
-  - if [ ! -d ~/.terminus/plugins ]; then mkdir -p ~/.terminus/plugins; fi
-
-  # Install Terminus Composer Plugin
-  - composer create-project --no-dev -d ~/.terminus/plugins pantheon-systems/terminus-composer-plugin:~1
 
 install:
   - cd $TRAVIS_BUILD_DIR
   - make travis-install
   - docker-compose ps
-
-before_script:
-  # Authenticate via terminus.
-  - terminus auth:login --email=travis-ci@savaslabs.com --machine-token=$PANTHEON_TOKEN
-
-  # Add Pantheon as a remote to our repo.
-  - cd $TRAVIS_BUILD_DIR
-  - git remote add pantheon ssh://codeserver.dev.$PUUID@codeserver.dev.$PUUID.drush.in:2222/~/repository.git
 
 script:
   - make phpcs
@@ -62,15 +35,3 @@ script:
 after_failure:
   - docker-compose logs
   - docker exec duke_margolis_php drush ws --count=100 --format=yaml
-
-after_success:
-  # If this was a master branch build (as opposed to PR), and the build passed:
-  # Go ahead and push the changes up to the dev environment and "deploy."
-  - if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ] ; then
-    pushd "$TRAVIS_BUILD_DIR"
-    git push pantheon master:master
-    popd
-    terminus remote:drush "$PNAME".dev updb -y --strict=0
-    terminus remote:drush "$PNAME.dev cim -y
-    terminus composer "$PNAME".dev -- install;
-    fi

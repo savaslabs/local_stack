@@ -23,8 +23,6 @@
         "drupal/console": "^1.0.2",
         "drupal/core": "^8.7.0",
         "drush/drush": "^9.0.0",
-        "drupal/devel": "^2.1",
-        "drupal/kint": "^2.1",
         "vlucas/phpdotenv": "^2.4",
         "webflo/drupal-finder": "^1.0.0",
         "webmozart/path-util": "^2.3",
