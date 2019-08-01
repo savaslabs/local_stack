@@ -107,7 +107,6 @@ install: ##@dev-environment Configure development environment.
 	make composer-install
 	chmod 777 web/sites/default
 	if [ ! -f web/sites/default/settings.local.php ]; then cp .docker/drupal/settings.local.php web/sites/default/settings.local.php; fi
-	cp .docker/drupal/settings.php web/sites/default/settings.php
 	@echo "Pulling database for $(PROJECT_NAME)..."
 	sleep 5
 	make import-db
@@ -136,7 +135,7 @@ import-db: ##@dev-environment Import locally cached copy of `database.sql` to pr
 	terminus backup:get $(PANTHEON).dev --element=database --to=.docker/db/database.sql.gz
 	gunzip .docker/db/database.sql.gz -f
 	@echo "Importing database for $(PROJECT_NAME)..."
-	pv .docker/db/database.sql | docker exec -i $(PROJECT_NAME)_mariasb mysql -ugu -pgu gu
+	pv .docker/db/database.sql | docker exec -i $(PROJECT_NAME)_mariasb mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
 	make drush cr
 	make sanitize-db
 
