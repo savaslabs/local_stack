@@ -118,7 +118,7 @@ travis-install: ##@dev-environment Configure development environment - Travis bu
 	if [ ! -f .env ]; then cp .env.dist .env; fi
 	make down
 	make up
-	make composer-install
+	# make composer-install
 	echo "Giving Docker a few seconds..."; sleep 10
 	# Configure phpcs to use Drupal coding standards (this typically runs as a post `composer install` script).
 	vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
