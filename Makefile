@@ -135,7 +135,7 @@ import-db: ##@dev-environment Import locally cached copy of `database.sql` to pr
 	terminus backup:get $(PANTHEON).dev --element=database --to=.docker/db/database.sql.gz
 	gunzip .docker/db/database.sql.gz -f
 	@echo "Importing database for $(PROJECT_NAME)..."
-	pv .docker/db/database.sql | docker exec -i $(PROJECT_NAME)_mariasb mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
+	pv .docker/db/database.sql | docker exec -i $(PROJECT_NAME)_mariadb mysql -u$(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
 	make drush cr
 	make sanitize-db
 
