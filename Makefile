@@ -47,7 +47,7 @@ include .env
 default: up
 
 PROJECT_ROOT ?= /var/www/html
-DRUPAL_ROOT ?= /var/www/html/www/web
+DRUPAL_ROOT ?= /var/www/html/web
 
 #
 # Dev Operations
@@ -76,7 +76,7 @@ stop: ##@docker Stop and remove containers.
 clean: ##@docker Remove containers and other files created during install.
 	make prune
 	rm .env
-	rm www/web/sites/default/settings.local.php
+	rm web/sites/default/settings.local.php
 
 prune: ##@docker Remove containers for project.
 	@echo "Removing containers for $(PROJECT_NAME)..."
@@ -105,9 +105,9 @@ install: ##@dev-environment Configure development environment.
 	make down
 	make up
 	make composer-install
-	chmod 777 www/web/sites/default
-	if [ ! -f www/web/sites/default/settings.local.php ]; then cp .docker/drupal/settings.local.php www/web/sites/default/settings.local.php; fi
-	cp .docker/drupal/settings.php www/web/sites/default/settings.php
+	chmod 777 web/sites/default
+	if [ ! -f web/sites/default/settings.local.php ]; then cp .docker/drupal/settings.local.php web/sites/default/settings.local.php; fi
+	cp .docker/drupal/settings.php web/sites/default/settings.php
 	@echo "Pulling database for $(PROJECT_NAME)..."
 	sleep 5
 	make import-db
@@ -122,7 +122,7 @@ travis-install: ##@dev-environment Configure development environment - Travis bu
 	make composer-install
 	echo "Giving Docker a few seconds..."; sleep 10
 	# Configure phpcs to use Drupal coding standards (this typically runs as a post `composer install` script).
-	docker-compose exec -T php vendor/bin/phpcs --config-set installed_paths /var/www/html/vendor/drupal/coder/coder_sniffer
+	vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
 composer-update: ##@dev-environment Run composer update.
 	docker-compose exec -T php composer update -n --prefer-dist -v
@@ -144,7 +144,7 @@ export-db:
 	docker exec $(shell docker ps --filter name='$(PROJECT_NAME)_php' --format "{{ .ID }}") drush -r $(DRUPAL_ROOT) sql:dump --result-file=$(PROJECT_ROOT)/.docker/db/export/database.sql --gzip --structure-tables-key=common
 
 pull-files: ##@dev-environment Pull files from production site.
-	terminus rsync $(PANTHEON).dev:files www/web/sites/default/files
+	terminus rsync $(PANTHEON).dev:files web/sites/default/files
 
 sanitize-db: ##@dev-environment Sanitize the database.
 	# Sanitize database.
@@ -187,10 +187,10 @@ enable-dev-modules: ##drush Enable modules for local development.
 # Theme commands
 #
 install-theme-dependencies: ##theme Installs npm dependencies for custom theme.
-	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm install; fi
+	if [ -d web/themes/custom/$(THEME_NAME) ]; then cd web/themes/custom/$(THEME_NAME) && npm install; fi
 
 build-theme-files: ##theme Builds CSS and JS bundle files for production.
-	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm run build; fi
+	if [ -d web/themes/custom/$(THEME_NAME) ]; then cd web/themes/custom/$(THEME_NAME) && npm run build; fi
 
 #
 # Tests
