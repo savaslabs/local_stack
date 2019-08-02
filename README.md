@@ -8,6 +8,7 @@
     * v18.06 and above
 1. Pantheon
     * Create a Pantheon
+    * Add an SSH Key to your Pantheon account. https://pantheon.io/docs/ssh-keys/
     * Install terminus on your local machine:  https://github.com/pantheon-systems/terminus#installation
     * Create a machine token on Pantheon, and copy the token:  https://pantheon.io/docs/machine-tokens/
     * Use terminus to authenticate to Pantheon:  https://pantheon.io/docs/machine-tokens/#authenticate-into-terminus
