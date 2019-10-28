@@ -110,6 +110,20 @@ section of composer.json:
 }
 ```
 
+### Performance tuning
+
+If the site is running slowly for you locally (i.e pages take more than a few seconds to load on average),
+you may be able to improve performance by allocating additional OS resources to Docker. This is particularly relevant on Mac OS.
+Specifically, we recommend the suggestions in Step 1 [of this article](https://markshust.com/2018/01/30/performance-tuning-docker-mac/):
+
+> Once you have (at the very least) a quad-core MacBook Pro with 16GB RAM and an SSD, go to Docker > Preferences > Advanced. Set the “computing resources dedicated to Docker” to at least 4 CPUs and 8.0 GB RAM.
+
+Alternatively, set your RAM usage to half of what your computer has available.
+
+Also note that disabling caching or enabling Xdebug locally will both decrease performance.
+
+For more information, see Redmine task [#9605](https://pm.savaslabs.com/issues/9605).
+
 ### Other
 
 `make pull-db` - to pull latest seed database from the production environment
