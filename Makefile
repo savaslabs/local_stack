@@ -187,10 +187,10 @@ enable-dev-modules: ##drush Enable modules for local development.
 # Theme commands
 #
 install-theme-dependencies: ##theme Installs npm dependencies for custom theme.
-	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm install; fi
+	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME)/storybook && npm install; fi
 
 build-theme-files: ##theme Builds CSS and JS bundle files for production.
-	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME) && npm run build; fi
+	if [ -d www/web/themes/custom/$(THEME_NAME) ]; then cd www/web/themes/custom/$(THEME_NAME)/storybook && npm run build; fi
 
 #
 # Tests
