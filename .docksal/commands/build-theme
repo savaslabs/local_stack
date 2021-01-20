@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Builds CSS and JS bundle files for production.
+##
+## Usage: fin build-theme
+
+fin exec npm run build --prefix web/themes/custom/${THEME_NAME}

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+## Installs npm dependencies for custom theme.
+##
+## Usage: fin npm-install
+
+fin exec npm install --prefix web/themes/custom/${THEME_NAME}
+fin exec npm rebuild node-sass --prefix web/themes/custom/${THEME_NAME}

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Imports content intended for PR review.
+##
+## Usage: fin import-content-review
+
+fin drush dcdi --folder=content/review/$(git rev-parse --abbrev-ref HEAD) --force-override -y

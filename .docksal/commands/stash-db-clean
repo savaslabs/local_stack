@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Remove all stashed DB copies.
+##
+## Usage: fin stash-db-clean
+
+rm -rf .docksal/database/stash/database*

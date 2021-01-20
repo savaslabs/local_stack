@@ -1,95 +1,131 @@
-# <Site Name\> Build
+# <site name> Build
 
-## Get started
+## Set up
+
+### Base theme
+
+Follow the instructions in the base theme (`web/themes/custom/*`) README.
+
+### Docksal
+
+In the `.docksal/docksal.env` file:
+1. Replace `<stack>` with a supported Docksal stack or remove the `DOCKSAL_STACK` line for a custom configuration. Docksal ships with a set of default configurations (stacks), which are yml files stored in `$HOME/.docksal/stacks/`. See [https://docs.docksal.io/stack/zero-configuration/]() for more information.
+    1. Acquia hosted sites: `acquia`
+    1. Pantheon hosted sites: `pantheon`
+    1. Sites hosted elsewhere: `default` or custom configuration in the `.docksal/docksal.yml` file. See [https://docs.docksal.io/stack/custom-configuration/]() for more information.
+1. Replace `<hosting platform>` with
+1. Replace `<hosting site name>` with
+1. Replace `<hosting environment>` with
+1. Replace `<virtual host>` with the desired virtual hostname.
+1. Replace `<theme>` with the machine name of the theme created in step 1.
+
+### Project README
+
+In the `README.md` file:
+1. Replace `<site name>` with the name of the site.
+1. Replace `<repo>` with the GitHub repository name.
+1. Replace `<virtual host>` with the desired virtual hostname.
+
+### Finished
+
+Delete the `Set up` section of the README.
+
+## Getting started
 
 ### Requirements
 
-1. Docker
-    * v18.06 and above
+1. Docksal
+    * Install Docksal: ([Linux](https://docs.docksal.io/getting-started/setup/#install-linux)) ([Mac](https://docs.docksal.io/getting-started/setup/#install-macos-docker-for-mac))
 1. Pantheon
-    * Create a Pantheon
-    * Add an SSH Key to your Pantheon account. https://pantheon.io/docs/ssh-keys/
-    * Install terminus on your local machine:  https://github.com/pantheon-systems/terminus#installation
-    * Create a machine token on Pantheon, and copy the token:  https://pantheon.io/docs/machine-tokens/
-    * Use terminus to authenticate to Pantheon:  https://pantheon.io/docs/machine-tokens/#authenticate-into-terminus
-    
-      This will save your authentication credentials associated with your email address.
-    
-      NOTE: If you encounter a PHP Console Hightlighter conflict, revert to version 0.3 following the [readme](https://github.com/JakubOnderka/PHP-Console-Highlighter)
-1. [Terminus Rsync Plugin](https://github.com/pantheon-systems/terminus-rsync-plugin). Allows you to rsync
-site files from Pantheon instead of fetching from a specific backup.
-    * `mkdir -p ~/.terminus/plugins` (if the directory does not yet exist)
-    * `composer create-project --no-dev -d ~/.terminus/plugins pantheon-systems/terminus-rsync-plugin:~1`
-1. [Drush Launcher](https://github.com/drush-ops/drush-launcher). Follow the instructions there or try:
-    * Run `which drush` to find the path of your drush installation
-    * `curl -OL https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar`
-    * `chmod +x drush.phar`
-    * Move drush.phar to the location of your old drush executable and rename to drush with `mv drush.phar /path/to/executable/drush`
-1. `pv` ([Pipe Viewer](http://www.ivarch.com/programs/pv.shtml))
-1. Review this README and follow instructions for local development setup
+    * Create a Pantheon account.
+    * Add an SSH Key to your Pantheon account: https://pantheon.io/docs/ssh-keys/
+    * Create a machine token on Pantheon: https://pantheon.io/docs/machine-tokens/
+      * Make sure you copy down your machine token once it is displayed. You will need this later, and it will not be displayed again.
+1. Review this README and follow instructions for local development setup.
 
 ### Site installation
 
-Clone this project:
-* `git clone git@github.com:savaslabs/<repo>.git` (GitHub repo)
+* Clone this project: `git clone git@github.com:savaslabs/<repo>.git` ([GitHub repo](https://github.com/savaslabs/<repo>))
 * `cd <repo>`
-* `make install` - build your development environment
+* Create a new file called `docksal-local.env` in the `.docksal` directory of the project.
+* Add the following contents, replacing `my-machine-token` with the machine token you created:
+  ````
+  SECRET_TERMINUS_TOKEN="my-machine-token"
+  ````
+* `fin init` - build your local development environment
 
+### Troubleshooting
+
+If you had any issues with the site installation, see the common errors below:
+> ERROR: for cli  Cannot start service cli: OCI runtime create failed: container_linux.go:346: starting container process caused "process_linux.go:449: container init caused \"rootfs_linux.go:58: mounting \\\"/var/lib/docker/volumes/project_root/_data\\\" to rootfs \\\"/var/lib/docker/overlay2/c611dc00713e30ede5999960959d21583ecc7f3a7736e29a12ce30922e753a76/merged\\\" at \\\"/var/www\\\" caused \\\"stat /var/lib/docker/volumes/project_root/_data: stale NFS file handle\\\"\"": unknown
+ERROR: Encountered errors while bringing up the project.
+
+Go to `System Preferences > Security & Privacy > Privacy > Full Disk Access`, click on the plus sign and press `Command-Shift-G` to search for and then add the `/sbin/nfsd` folder.
 
 ## Local development
 
 ### Get Local web address:
 
-Add `127.0.0.1 <site URL>` to your hosts file.
+Go to [http://<virtual host>.docksal/]()
 
-Go to [<site URL\>]()
+### Docksal commands
 
-### Make commands
+`fin help` - to list all available commands.
 
-Once local development is installed:
+Initialize or reset your environment:
+* `fin init` to initially create the local environment and pull a seed database and assets
+  * Optional parameters
+    * `--skip-files` or `-sf` - skip syncing the files directory
+    * `--skip-theme` or `-st` - skip installing npm dependencies and building the theme files
 
-* `make install` to initially create the local environment and pull a seed database and assets.
-* `make up` - to spin containers up
-* `make down` - to spin them down
+`fin init` works without any parameters. By default, it will sync the files directory and build the theme files. To skip one or both see the examples below:
+* `fin init -sf` - initialize, but skip syncing the files directory
+* `fin init -sf -st` - initialize, but skip syncing the files directory and building the theme files
 
-Refer to Makefile for available local development commands.
 
-`make help` - to list all available commands.
+Standard commands:
+* `fin pull db` - to pull latest database from Pantheon
+* `fin pull files` - to rsync the files from Pantheon
+* `fin start` or `fin up` - to bring the environment up
+* `fin stop` - to bring the environment down
+* `fin system stop` - to stop and shutdown Docksal
+
+Custom site-specific commands:
+* `fin npm-install` - install npm dependencies for the custom theme
+* `fin build-theme` - build CSS and JS bundle files for production
+* `fin watch-theme` - hot-reload CSS and JS bundle files for development
+* `fin phpcs` - PHP Code Sniffer
 
 ### Run Drush commands
 
 Remember that you need to install Drush Launcher before attempting these commands.
 
-`make drush <command>`
+`fin drush <command>`
 
-See a list of most common Drush commands represented as Makefile targets below:
+See a list of most common Drush commands below:
 
-* `make cim` - import configuration
-* `make cex` - export configuration
-* `make updb` - run database updates
-* `make entup` - run entity updates
-* `make uli` - generate login link for user 1
-
-### Drush aliases
-
-`drush site:alias @self` will display a list of all available aliases.
+* `fin drush cr` - clear cache
+* `fin drush cim` - import configuration
+* `fin drush cex` - export configuration
+* `fin drush updb` - run database updates
+* `fin drush uli` - generate login link for user 1
 
 ### Run Composer commands
 
 Please use composer commands defined within Makefile:
 
-* `make compose-install`
-* `make composer-update`
+Run composer within the container `fin composer <command>`
 
-OR
+Examples below:
 
-run composer within the container `docker-compose exec -T php composer <command> -n --prefer-dist -v`
+* `fin composer install`
+* `fin composer update`
 
 ### Adding new contributed modules
 
-Run `docker-compose exec -T php composer require drupal/<module_name> -n --prefer-dist -v`
+Run `fin composer require drupal/<module_name> -n --prefer-dist -v`
 to add it to the list of requirements in composer.json. Then, use drush to
-enable the module by running `make drush en <module_name>`. Be sure to export
+enable the module by running `fin drush en <module_name>`. Be sure to export
 the site configuration and commit that as well.
 
 ### Patching contributed module
@@ -110,6 +146,12 @@ section of composer.json:
 }
 ```
 
+### Access to MySQL
+
+The Docksal environment is configured to expose MySQL on port 33306 of the host machine. It can be accessed with the following command:
+
+mysql -u root -proot default -h 127.0.0.1 -P 33306
+
 ### Performance tuning
 
 If the site is running slowly for you locally (i.e pages take more than a few seconds to load on average),
@@ -124,150 +166,24 @@ Also note that disabling caching or enabling Xdebug locally will both decrease p
 
 For more information, see Redmine task [#9605](https://pm.savaslabs.com/issues/9605).
 
-### Other
-
-`make pull-db` - to pull latest seed database from the production environment
-
-## Composer template for Drupal projects
-
-This project is built using [Drupal Composer project](https://github.com/drupal-composer/drupal-project)  and [Acquia RA composer template](https://docs.acquia.com/ra/automation/composer/#template)
-
-Docker containers for the project are configured using [Docker4Drupal](https://github.com/wodby/docker4drupal) - Docker-based Drupal stack.
-If there's ever a need to add or modify containers, please refer to the project's documentation on GitHub.
-
-## Working with Pantheon
-
-### Deploying code
-
-To deploy code to Pantheon environments, first create a new tag using
-the Git Flow process. Push the tag to Pantheon and deploy it to whichever
-environment you choose.
-
-### Configuration management
-
-To import configuration into Pantheon, use Terminus:
-
-```
-`terminus remote:drush <site>.<env> -- cim` 
-
-# Composer template for Drupal projects
-
-[![Build Status](https://travis-ci.org/drupal-composer/drupal-project.svg?branch=8.x)](https://travis-ci.org/drupal-composer/drupal-project)
-
-This project template provides a starter kit for managing your site
-dependencies with [Composer](https://getcomposer.org/).
-
-If you want to know how to use it as replacement for
-[Drush Make](https://github.com/drush-ops/drush/blob/8.x/docs/make.md) visit
-the [Documentation on drupal.org](https://www.drupal.org/node/2471553).
-
-## Usage
-
-First you need to [install composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
-
-> Note: The instructions below refer to the [global composer installation](https://getcomposer.org/doc/00-intro.md#globally).
-You might need to replace `composer` with `php composer.phar` (or similar) 
-for your setup.
-
-After that you can create the project:
-
-```
-composer create-project drupal-composer/drupal-project:8.x-dev some-dir --no-interaction
-```
-
-With `composer require ...` you can download new dependencies to your 
-installation.
-
-```
-cd some-dir
-composer require drupal/devel:~1.0
-```
-
-The `composer create-project` command passes ownership of all files to the 
-project that is created. You should create a new git repository, and commit 
-all files not excluded by the .gitignore file.
-
-## What does the template do?
-
-When installing the given `composer.json` some tasks are taken care of:
-
-* Drupal will be installed in the `web`-directory.
-* Autoloader is implemented to use the generated composer autoloader in `vendor/autoload.php`,
-  instead of the one provided by Drupal (`web/vendor/autoload.php`).
-* Modules (packages of type `drupal-module`) will be placed in `web/modules/contrib/`
-* Theme (packages of type `drupal-theme`) will be placed in `web/themes/contrib/`
-* Profiles (packages of type `drupal-profile`) will be placed in `web/profiles/contrib/`
-* Creates default writable versions of `settings.php` and `services.yml`.
-* Creates `web/sites/default/files`-directory.
-* Latest version of drush is installed locally for use at `vendor/bin/drush`.
-* Latest version of DrupalConsole is installed locally for use at `vendor/bin/drupal`.
-* Creates environment variables based on your .env file. See [.env.example](.env.example).
-
-## Updating Drupal Core
-
-This project will attempt to keep all of your Drupal Core files up-to-date; the 
-project [drupal-composer/drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) 
-is used to ensure that your scaffold files are updated every time drupal/core is 
-updated. If you customize any of the "scaffolding" files (commonly .htaccess), 
-you may need to merge conflicts if any of your modified files are updated in a 
-new release of Drupal core.
-
-Follow the steps below to update your core files.
-
-1. Run `composer update drupal/core webflo/drupal-core-require-dev "symfony/*" --with-dependencies` to update Drupal Core and its dependencies.
-1. Run `git diff` to determine if any of the scaffolding files have changed. 
-   Review the files for any changes and restore any customizations to 
-  `.htaccess` or `robots.txt`.
-1. Commit everything all together in a single commit, so `web` will remain in
-   sync with the `core` when checking out branches or running `git bisect`.
-1. In the event that there are non-trivial conflicts in step 2, you may wish 
-   to perform these steps on a branch, and use `git merge` to combine the 
-   updated core files with your customized files. This facilitates the use 
-   of a [three-way merge tool such as kdiff3](http://www.gitshah.com/2010/12/how-to-setup-kdiff-as-diff-tool-for-git.html). This setup is not necessary if your changes are simple; 
-   keeping all of your modifications at the beginning or end of the file is a 
-   good strategy to keep merges easy.
-
-## Generate composer.json from existing project
-
-With using [the "Composer Generate" drush extension](https://www.drupal.org/project/composer_generate)
-you can now generate a basic `composer.json` file from an existing project. Note
-that the generated `composer.json` might differ from this project's file.
-
-
 ## FAQ
+
+### I forgot my SSH key passphrase, what should I do?
+
+Refer to the [Recovering your SSH key passphrase](https://help.github.com/en/github/authenticating-to-github/recovering-your-ssh-key-passphrase) guide from Github.
 
 ### Should I commit the contrib modules I download?
 
-Composer recommends **no**. They provide [argumentation against but also 
+Composer recommends **no**. They provide [argumentation against but also
 workrounds if a project decides to do it anyway](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md).
 
-### Should I commit the scaffolding files?
-
-The [drupal-scaffold](https://github.com/drupal-composer/drupal-scaffold) plugin can download the scaffold files (like
-index.php, update.php, …) to the web/ directory of your project. If you have not customized those files you could choose
-to not check them into your version control system (e.g. git). If that is the case for your project it might be
-convenient to automatically run the drupal-scaffold plugin after every install or update of your project. You can
-achieve that by registering `@composer drupal:scaffold` as post-install and post-update command in your composer.json:
-
-```json
-"scripts": {
-    "post-install-cmd": [
-        "@composer drupal:scaffold",
-        "..."
-    ],
-    "post-update-cmd": [
-        "@composer drupal:scaffold",
-        "..."
-    ]
-},
-```
 ### How can I apply patches to downloaded modules?
 
-If you need to apply patches (depending on the project being modified, a pull 
-request is often a better solution), you can do so with the 
+If you need to apply patches (depending on the project being modified, a pull
+request is often a better solution), you can do so with the
 [composer-patches](https://github.com/cweagans/composer-patches) plugin.
 
-To add a patch to drupal module foobar insert the patches section in the extra 
+To add a patch to drupal module foobar insert the patches section in the extra
 section of composer.json:
 ```json
 "extra": {
@@ -278,6 +194,7 @@ section of composer.json:
     }
 }
 ```
+
 ### How do I switch from packagist.drupal-composer.org to packages.drupal.org?
 
 Follow the instructions in the [documentation on drupal.org](https://www.drupal.org/docs/develop/using-composer/using-packagesdrupalorg).

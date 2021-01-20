@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Imports content intended for deployment.
+##
+## Usage: fin import-content-deploy
+
+fin drush dcdi --folder=content/deploy --force-override -y

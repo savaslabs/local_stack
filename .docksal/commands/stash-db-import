@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+## Import a copy of the stashed DB (pass filename, omit file extension).
+##
+## Usage: fin stash-db-import [filename]
+
+if [ ! $1 ]; then echo 'Enter the database filename, omit file extension'; exit 1; fi
+gunzip .docksal/database/stash/$1.sql -f
+echo "Dropping database..."
+fin db drop database
+fin db create database
+echo "Importing database..."
+fin db import .docksal/database/stash/$1.sql
+gzip .docksal/database/stash/$1.sql
+fin drush cr

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Hot-reloads CSS and JS bundle files for development.
+##
+## Usage: fin watch-theme
+
+fin exec npm run watch-poll --prefix web/themes/custom/${THEME_NAME}

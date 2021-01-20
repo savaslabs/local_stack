@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## PHP Code Sniffer
+##
+## Usage: fin phpcs
+
+fin run phpcs --standard=Drupal web/modules/custom web/themes/custom --ignore=*.css,*scss,*.js,*.min.js,*.md,*.txt,node_modules/* --exclude=Drupal.InfoFiles.AutoAddedKeys

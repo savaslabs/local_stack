@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+## Dump a copy of the current DB.
+##
+## Usage: fin stash-db
+
+OUTPUT_FILE=.docksal/database/stash/database-$(date -u +'%Y-%m-%dT%H-%M-%SZ').sql
+fin db dump $OUTPUT_FILE && gzip $OUTPUT_FILE

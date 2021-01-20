@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+## Prepare site for local development
+##
+## Usage: fin prep-site
+
+#-------------------------- Helper functions --------------------------------
+
+# Console colors
+green='\033[0;32m'
+NC='\033[0m'
+
+#-------------------------- Execution --------------------------------
+
+# Apply the database updates
+echo -e "${NC}${green} Applying the database updates...${NC}"
+fin drush updb -y
+
+# Import the configuration
+echo -e "${NC}${green} Importing the site configuration...${NC}"
+fin drush cim -y
+
+# Sanitize the database
+echo -e "${NC}${green} Sanitizing the database...${NC}"
+fin drush sqlsan -y
+fin drush user:password admin --password="password"
+
+# Build the theme.
+echo -e "${NC}${green} Building theme...${NC}"
+fin npm-install
+fin build-theme
+
+echo -e "${NC}${green} Completed all initialization steps. Generating login link...${NC}"
+fin drush uli
+
+#-------------------------- END: Execution --------------------------------

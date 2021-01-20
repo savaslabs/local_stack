@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Stashes DB copies.
+##
+## Usage: fin stash-db-list
+
+ls -1 .docksal/database/stash
